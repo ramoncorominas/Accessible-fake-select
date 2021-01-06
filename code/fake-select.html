@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Select simulado</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/jquery-1.9.1.min.js"></script>
+    <script>
+$(document).ready(function() {
+
+    $('.fake-select').each(function(index, value) {
+        var sel = $(this).find('select') // the real-select element
+        var opt = $(this).find('option') // options in the real-select
+        var cur = $(this).find('option:selected').text() // text of the currently selected option
+        
+        var txt = $(this).find('.sl-fake.text') // visible text of fake-select (clickable text of the fake select)
+        
+        $(this).find('.sl-list').hide() // hide block of fake-select options
+        txt.text(cur) // copy selected option to fake-select visible texttext
+        
+        $(this).click(function() {
+            // clicking in any part of the component toggles (open/close) the fake-select list of options
+            $(this).find('.sl-list').toggle()
+        })
+        
+        // focusing the real-select changes outline of fake-select (change to CSS-only)
+        sel.focus(function() {
+            $(this).parents('.fake-select').find('.sl-fake').css({ outline: '2px solid #fff' })
+        })
+        
+        // and blur "closes" the fake-select and removes outline
+        sel.blur(function() {
+            $(this).parents('.fake-select').find('.sl-list').hide()
+            $(this).parents('.fake-select').find('.sl-fake').css({ outline: 'none' });
+        })
+        
+        // reading keys...
+        sel.keypress(function(e) {
+            var lst = $(this).parents('.fake-select').find('.sl-list')
+            // open fake-select on alt+down arrow
+            if(e.altKey && e.keyCode == 40) {
+                lst.show()
+            }
+            
+            // Escape or Enter (close fake-select)
+            if(e.keyCode == 27 || e.keyCode == 13) {
+                lst.hide();
+            }
+            
+            // any key press updates the visible text with the currently selected option
+            // ** fix: if fake options are open, update focus in the list
+            // ** fix: this should also care about visibility of fake options
+            txt.text($(this).find('option:selected').text());
+        }) // sel.keypress
+        
+    }); // $('.fake-select').each
+
+}); // $(document).ready
+    </script>
+</head>
+<body>
+
+<div id="container">
+    <h1>Select simulado</h1>
+    <p>Algún contenido con <a href="#">enlace</a> sólo para poder tabular.</p>
+    <form>
+        <div class="fake-select" id="city" role="application">
+        
+        <label for="sl-city">Ciudad</label>
+        <select id="sl-city" name="ciudad">
+            <option value="ovd" selected="selected">Oviedo</option>
+            <option value="mad">Madrid</option>
+            <option value="bcn">Barcelona</option>
+            <option value="mur">Murcia</option>
+        </select>
+        
+        <div class="sl-fake" aria-hidden="true">
+            <span class="texto"></span>
+            <img src="./img/ico-dn.png" alt="">
+        </div>
+        
+        <div class="sl-list" aria-hidden="true">
+            <ul>
+                <li class="selected">Oviedo</li>
+                <li>Madrid</li>
+                <li>Barcelona</li>
+                <li>Murcia</li>
+            </ul>
+        </div><!--/.sl-list-->
+        
+        </div><!--/.fake-select-->
+    </form>
+    <p>Algún contenido con <a href="#">enlace</a></p>
+</div><!--/#container-->
+
+</body>
+</html>
